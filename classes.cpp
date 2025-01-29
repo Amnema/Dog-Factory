@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include "Patterns.h"
 using namespace std;
 enum class SizeEnum:int
 {
