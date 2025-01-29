@@ -47,6 +47,108 @@ public:
     }
 };
 
+//декораторы для итератора векторного контейнера
+
+class DogGoodIteratorDecorator : public IteratorDecorator<DogPtr>
+{
+private:
+    bool TargetGood;
+
+public:
+    DogGoodIteratorDecorator(Iterator<DogPtr> *it, bool targetGood)
+    : IteratorDecorator(it)
+    {
+        TargetGood = targetGood;
+    }
+
+    void First()
+    {
+        It->First();
+        while(!It->IsDone() &&
+              It->GetCurrent()->IsGood() != TargetGood)
+        {
+            It->Next();
+        }
+    }
+
+    void Next()
+    {
+        do
+        {
+            It->Next();
+
+        } while(!It->IsDone() &&
+                It->GetCurrent()->IsGood() != TargetGood);
+    }
+};
+
+class DogColorIteratorDecorator : public IteratorDecorator<DogPtr>
+{
+private:
+    ColorEnum TargetColor;
+
+public:
+    DogColorIteratorDecorator(Iterator<DogPtr> *it, ColorEnum targetColor)
+    : IteratorDecorator(it)
+    {
+        TargetColor = targetColor;
+    }
+
+    void First()
+    {
+        It->First();
+        while(!It->IsDone() &&
+              It->GetCurrent()->GetColor() != TargetColor)
+        {
+            It->Next();
+        }
+    }
+
+    void Next()
+    {
+        do
+        {
+            It->Next();
+
+        } while(!It->IsDone() &&
+                It->GetCurrent()->GetColor() != TargetColor);
+    }
+};
+
+class DogSizeIteratorDecorator : public IteratorDecorator<DogPtr>
+{
+private:
+    SizeEnum TargetSize;
+
+public:
+    DogSizeIteratorDecorator(Iterator<DogPtr> *it, SizeEnum targetSize)
+    : IteratorDecorator(it)
+    {
+        TargetSize = targetSize;
+    }
+
+    void First()
+    {
+        It->First();
+        while(!It->IsDone() &&
+              It->GetCurrent()->GetSize() != TargetSize)
+        {
+            It->Next();
+        }
+    }
+
+    void Next()
+    {
+        do
+        {
+            It->Next();
+
+        } while(!It->IsDone() &&
+                It->GetCurrent()->GetSize() != TargetSize);
+    }
+};
+
+
 //итератор для контейнера типа лист
 class DogListContainerIterator : public Iterator<DogPtr>
 {

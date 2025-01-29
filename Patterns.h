@@ -16,7 +16,7 @@ public:
     virtual bool IsDone() const = 0;
     virtual Type GetCurrent() const = 0;
 };
-/*
+
 //декоратор
 template<class Type>
 class IteratorDecorator : public Iterator<Type>
@@ -37,5 +37,5 @@ public:
     Type GetCurrent() const { return It->GetCurrent(); }
 
 };
-*/
+
 #endif // PatternsH
