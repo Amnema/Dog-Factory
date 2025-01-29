@@ -1,7 +1,7 @@
 #include <iostream>
 #include "containers.cpp"
 using namespace std;
-//роспись функций входящих в контейнер типа вектор
+//СЂРѕСЃРїРёСЃСЊ С„СѓРЅРєС†РёР№ РІС…РѕРґСЏС‰РёС… РІ РєРѕРЅС‚РµР№РЅРµСЂ С‚РёРїР° РІРµРєС‚РѕСЂ
 DogVectorContainer::DogVectorContainer(int maxSize)
 {
     DogValier = new DogPtr[maxSize];
@@ -39,10 +39,10 @@ void DogVectorContainer::AddDog(DogPtr newDog)
 {
     switch(type)
     {
-        case FruitType::Apple: return L"яблоко";
-        case FruitType::Kiwi: return L"киви";
-        case FruitType::Orange: return L"апельсин";
-        default: return L"неизвестный фрукт";
+        case FruitType::Apple: return L"СЏР±Р»РѕРєРѕ";
+        case FruitType::Kiwi: return L"РєРёРІРё";
+        case FruitType::Orange: return L"Р°РїРµР»СЊСЃРёРЅ";
+        default: return L"РЅРµРёР·РІРµСЃС‚РЅС‹Р№ С„СЂСѓРєС‚";
     }
 }
 
@@ -50,19 +50,50 @@ wstring PrintFruitColor(const ColorEnum color)
 {
     switch(color)
     {
-        case ColorEnum::Green: return L"зеленый";
-        case ColorEnum::Red: return L"красный";
-        case ColorEnum::Orange: return L"ораанжевый";
-        default: return L"неизвестный";
+        case ColorEnum::Green: return L"Р·РµР»РµРЅС‹Р№";
+        case ColorEnum::Red: return L"РєСЂР°СЃРЅС‹Р№";
+        case ColorEnum::Orange: return L"РѕСЂР°Р°РЅР¶РµРІС‹Р№";
+        default: return L"РЅРµРёР·РІРµСЃС‚РЅС‹Р№";
     }
 }*/
 
 int main()
 {
-   // Создаем контейнер
+    srand(time(0)); // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РіРµРЅРµСЂР°С‚РѕСЂР° СЃР»СѓС‡Р°Р№РЅС‹С… С‡РёСЃРµР»
+
+    DogVectorContainer dogContainer(10); // РљРѕРЅС‚РµР№РЅРµСЂ РЅР° 10 СЃРѕР±Р°Рє
+
+    // Р—Р°РїРѕР»РЅСЏРµРј РєРѕРЅС‚РµР№РЅРµСЂ СЃР»СѓС‡Р°Р№РЅС‹РјРё СЃРѕР±Р°РєР°РјРё
+    int numDogs = rand() % 10 + 1; // РљРѕР»РёС‡РµСЃС‚РІРѕ СЃРѕР±Р°Рє (РѕС‚ 1 РґРѕ 10)
+    for (int i = 0; i < numDogs; i++)
+    {
+        DogPtr newDog = DogFactory::CreateRandomDog();
+        dogContainer.AddDog(newDog);
+    }
+
+    cout << "Create " << numDogs << " random dogs.\n";
+
+    // Р’С‹РІРµРґРµРј СЃРїРёСЃРѕРє РІСЃРµС… СЃРѕР±Р°Рє
+    Iterator<DogPtr> *it = dogContainer.GetIterator();
+    for (it->First(); !it->IsDone(); it->Next())
+    {
+        DogPtr dog = it->GetCurrent();
+        cout << "Dog species: " << static_cast<int>(dog->GetSpecies())
+             << ", Color: " << static_cast<int>(dog->GetColor())
+             << ", Size: " << static_cast<int>(dog->GetSize())
+             << ", Good? " << (dog->IsGood() ? "yes" : "no") << endl;
+    }
+    delete it;
+
+    return 0;
+}
+
+/*
+    // РџР РћР’Р•Р РљРђ Р”Р›РЇ Р”Р•РљРћР РђРўРћР РћР’
+   // РЎРѕР·РґР°РµРј РєРѕРЅС‚РµР№РЅРµСЂ
     DogVectorContainer dogVector(5);
 
-    // Добавляем собак
+    // Р”РѕР±Р°РІР»СЏРµРј СЃРѕР±Р°Рє
     DogPtr d1 = new Dachshund(ColorEnum::Brown, SizeEnum::Small);
     DogPtr d2 = new Husky(ColorEnum::Grey, SizeEnum::Big);
     DogPtr d3 = new Labrador(ColorEnum::Black, SizeEnum::Giant);
@@ -75,7 +106,7 @@ int main()
     dogVector.AddDog(d4);
     dogVector.AddDog(d5);
 
-    // Покормим всех собак, кроме таксы
+    // РџРѕРєРѕСЂРјРёРј РІСЃРµС… СЃРѕР±Р°Рє, РєСЂРѕРјРµ С‚Р°РєСЃС‹
     d2->Feed();
     d3->Feed();
     d4->Feed();
@@ -121,14 +152,14 @@ int main()
     delete smallDogs;
 
     return 0;
-}
+}*/
 /*
-    // ПРОВЕРКА РАБОТЫ ИТЕРАТОРОВ
-    // Создаем контейнеры
+    // РџР РћР’Р•Р РљРђ Р РђР‘РћРўР« РРўР•Р РђРўРћР РћР’
+    // РЎРѕР·РґР°РµРј РєРѕРЅС‚РµР№РЅРµСЂС‹
     DogVectorContainer dogVector(5);
     DogListContainer dogList;
 
-    // Добавляем собак
+    // Р”РѕР±Р°РІР»СЏРµРј СЃРѕР±Р°Рє
     DogPtr d1 = new Dachshund(ColorEnum::Brown, SizeEnum::Small);
     DogPtr d2 = new Husky(ColorEnum::Grey, SizeEnum::Big);
     DogPtr d3 = new Labrador(ColorEnum::Black, SizeEnum::Giant);
@@ -141,7 +172,7 @@ int main()
     dogList.AddDog(d2);
     dogList.AddDog(d3);
 
-    // Тест итератора для вектора
+    // РўРµСЃС‚ РёС‚РµСЂР°С‚РѕСЂР° РґР»СЏ РІРµРєС‚РѕСЂР°
     Iterator<DogPtr> *vectorIterator = dogVector.GetIterator();
     cout << "=== DogVectorContainer ===\n";
     for (vectorIterator->First(); !vectorIterator->IsDone(); vectorIterator->Next())
@@ -151,9 +182,9 @@ int main()
         current->Feed();
         current->Pet();
     }
-    delete vectorIterator;  // Удаляем итератор
+    delete vectorIterator;  // РЈРґР°Р»СЏРµРј РёС‚РµСЂР°С‚РѕСЂ
 
-    // Тест итератора для списка
+    // РўРµСЃС‚ РёС‚РµСЂР°С‚РѕСЂР° РґР»СЏ СЃРїРёСЃРєР°
     Iterator<DogPtr> *listIterator = dogList.GetIterator();
     cout << "\n=== DogListContainer ===\n";
     for (listIterator->First(); !listIterator->IsDone(); listIterator->Next())
@@ -163,7 +194,7 @@ int main()
         current->Feed();
         current->Pet();
     }
-    delete listIterator;  // Удаляем итератор
+    delete listIterator;  // РЈРґР°Р»СЏРµРј РёС‚РµСЂР°С‚РѕСЂ
 
     return 0;
 */

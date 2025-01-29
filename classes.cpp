@@ -1,5 +1,7 @@
 #include <iostream>
 #include "Patterns.h"
+#include <cstdlib> // для rand()
+#include <ctime>   // для srand()
 using namespace std;
 enum class SizeEnum:int
 {
@@ -28,12 +30,20 @@ enum class DogSpecies:int
 class Dog
 {
 protected:
-    bool BoyIsGood = false;
+    bool BoyIsGood;
     SizeEnum Size;
     ColorEnum Color;
     DogSpecies Species;
 public:
-    bool IsGood() {return BoyIsGood;}
+    Dog()
+    {
+        // 80% шанс, что собака добрая, 20% - злая
+        BoyIsGood = (rand() % 10 < 8);
+    }
+
+    bool IsGood() { return BoyIsGood; }
+    void SetGood(bool value) { BoyIsGood = value; }
+
     virtual SizeEnum GetSize() {return Size;}
     virtual DogSpecies GetSpecies() {return Species;}
     virtual ColorEnum GetColor() {return Color;}
@@ -82,3 +92,28 @@ public:
     void Pet() {if(IsGood()){cout<<"Alabai is happy!!!\n";} else {cout<<"Alabai is angry...\n";}}
     void Feed() {cout<<"Alabai ate all food :D\n"; BoyIsGood = true;}
 };
+
+//Создание фабрики для реализации фабричного метода
+class DogFactory
+{
+public:
+    static DogPtr CreateRandomDog()
+    {
+        // Генерируем случайные параметры
+        DogSpecies species = static_cast<DogSpecies>(rand() % 5);
+        ColorEnum color = static_cast<ColorEnum>(rand() % 4);
+        SizeEnum size = static_cast<SizeEnum>(rand() % 4);
+
+        // Создаем случайную собаку
+        switch (species)
+        {
+            case DogSpecies::Dachshund: return new Dachshund(color, size);
+            case DogSpecies::Spitz: return new Spitz(color, size);
+            case DogSpecies::Husky: return new Husky(color, size);
+            case DogSpecies::Labrador: return new Labrador(color, size);
+            case DogSpecies::Alabai: return new Alabai(color, size);
+            default: return nullptr;
+        }
+    }
+};
+
