@@ -34,31 +34,76 @@ void DogVectorContainer::AddDog(DogPtr newDog)
     DogValier[DogCount] = newDog;
     DogCount++;
 }
-
-/*wstring PrintFruitType(const FruitType type)
+wstring PrintDogSpecies (const DogSpecies species)
 {
-    switch(type)
+    switch(species)
     {
-        case FruitType::Apple: return L"яблоко";
-        case FruitType::Kiwi: return L"киви";
-        case FruitType::Orange: return L"апельсин";
-        default: return L"неизвестный фрукт";
+        case DogSpecies::Alabai: return L"Alabai";
+        case DogSpecies::Dachshund: return L"Dachshund";
+        case DogSpecies::Husky: return L"Husky";
+        case DogSpecies::Labrador: return L"Labrador";
+        case DogSpecies::Spitz: return L"Spitz";
+        default: return L"Unknown";
     }
 }
 
-wstring PrintFruitColor(const ColorEnum color)
+wstring PrintDogColor (const ColorEnum color)
 {
     switch(color)
     {
-        case ColorEnum::Green: return L"зеленый";
-        case ColorEnum::Red: return L"красный";
-        case ColorEnum::Orange: return L"ораанжевый";
-        default: return L"неизвестный";
+        case ColorEnum::Black: return L"Black";
+        case ColorEnum::Brown: return L"Brown";
+        case ColorEnum::Grey: return L"Grey";
+        case ColorEnum::MultiColor: return L"MultiColor";
+        case ColorEnum::White: return L"White";
+        default: return L"Unknown";
     }
-}*/
+}
+
+wstring PrintDogSize (const SizeEnum sizedog)
+{
+    switch(sizedog)
+    {
+        case SizeEnum::Big: return L"Big";
+        case SizeEnum::Giant: return L"Giant";
+        case SizeEnum::Medium: return L"Medium";
+        case SizeEnum::Small: return L"Small";
+        default: return L"Unknown";
+    }
+}
+//функция для совместного использования итератора и декоратора
+void PrintFilteredDogs(DogVectorContainer &dogContainer, bool goodOnly, ColorEnum colorFilter)
+{
+    Iterator<DogPtr> *it = dogContainer.GetIterator();
+
+    // Декоратор для выбора только хороших собак
+    if (goodOnly)
+    {
+        it = new DogGoodIteratorDecorator(it, true);
+    }
+
+    // Декоратор для фильтрации по цвету
+    if (colorFilter != ColorEnum::MultiColor)
+    {
+        it = new DogColorIteratorDecorator(it, colorFilter);
+    }
+
+    cout << "Filtered dogs:\n";
+    for (it->First(); !it->IsDone(); it->Next())
+    {
+        DogPtr dog = it->GetCurrent();
+        wcout << L"Dog species: " << PrintDogSpecies(dog->GetSpecies())
+             << L", Color: " << PrintDogColor(dog->GetColor())
+             << L", Size: " << PrintDogSize(dog->GetSize())
+             << L", Good? " << (dog->IsGood() ? L"Yes" : L"No") << endl;
+    }
+    delete it;
+}
+
 
 int main()
 {
+    //фабричный метод и фильтрация (совместное использование декоратора и итератора)
     srand(time(0)); // Инициализация генератора случайных чисел
 
     DogVectorContainer dogContainer(10); // Контейнер на 10 собак
@@ -78,125 +123,20 @@ int main()
     for (it->First(); !it->IsDone(); it->Next())
     {
         DogPtr dog = it->GetCurrent();
-        cout << "Dog species: " << static_cast<int>(dog->GetSpecies())
-             << ", Color: " << static_cast<int>(dog->GetColor())
-             << ", Size: " << static_cast<int>(dog->GetSize())
-             << ", Good? " << (dog->IsGood() ? "yes" : "no") << endl;
+        wcout << L"Dog species: " << PrintDogSpecies(dog->GetSpecies())
+             << L", Color: " << PrintDogColor(dog->GetColor())
+             << L", Size: " << PrintDogSize(dog->GetSize())
+             << L", Good? " << (dog->IsGood() ? L"yes" : L"no") << endl;
     }
     delete it;
+    cout << "\nFilter: Only good dogs\n";
+    PrintFilteredDogs(dogContainer, true, ColorEnum::MultiColor);
 
+    cout << "\nFilter:Only wight dogs\n";
+    PrintFilteredDogs(dogContainer, false, ColorEnum::White);
     return 0;
 }
 
-/*
-    // ПРОВЕРКА ДЛЯ ДЕКОРАТОРОВ
-   // Создаем контейнер
-    DogVectorContainer dogVector(5);
 
-    // Добавляем собак
-    DogPtr d1 = new Dachshund(ColorEnum::Brown, SizeEnum::Small);
-    DogPtr d2 = new Husky(ColorEnum::Grey, SizeEnum::Big);
-    DogPtr d3 = new Labrador(ColorEnum::Black, SizeEnum::Giant);
-    DogPtr d4 = new Spitz(ColorEnum::White, SizeEnum::Small);
-    DogPtr d5 = new Alabai(ColorEnum::Brown, SizeEnum::Giant);
-
-    dogVector.AddDog(d1);
-    dogVector.AddDog(d2);
-    dogVector.AddDog(d3);
-    dogVector.AddDog(d4);
-    dogVector.AddDog(d5);
-
-    // Покормим всех собак, кроме таксы
-    d2->Feed();
-    d3->Feed();
-    d4->Feed();
-    d5->Feed();
-
-    cout << "=== All Dogs ===" << endl;
-    Iterator<DogPtr> *allDogs = dogVector.GetIterator();
-    for (allDogs->First(); !allDogs->IsDone(); allDogs->Next())
-    {
-        DogPtr dog = allDogs->GetCurrent();
-        cout << "Dog species: " << static_cast<int>(dog->GetSpecies()) << " | "
-             << "Color: " << static_cast<int>(dog->GetColor()) << " | "
-             << "Size: " << static_cast<int>(dog->GetSize()) << " | "
-             << "IsGood: " << dog->IsGood() << endl;
-    }
-    delete allDogs;
-
-    cout << "\n=== Decorator: Only good boys ===" << endl;
-    Iterator<DogPtr> *goodDogs = new DogGoodIteratorDecorator(dogVector.GetIterator(), true);
-    for (goodDogs->First(); !goodDogs->IsDone(); goodDogs->Next())
-    {
-        DogPtr dog = goodDogs->GetCurrent();
-        cout << "Good dog species: " << static_cast<int>(dog->GetSpecies()) << endl;
-    }
-    delete goodDogs;
-
-    cout << "\n=== Decorator: Only white dogs ===" << endl;
-    Iterator<DogPtr> *whiteDogs = new DogColorIteratorDecorator(dogVector.GetIterator(), ColorEnum::White);
-    for (whiteDogs->First(); !whiteDogs->IsDone(); whiteDogs->Next())
-    {
-        DogPtr dog = whiteDogs->GetCurrent();
-        cout << "White dog species: " << static_cast<int>(dog->GetSpecies()) << endl;
-    }
-    delete whiteDogs;
-
-    cout << "\n=== Decorator: Only small dogs ===" << endl;
-    Iterator<DogPtr> *smallDogs = new DogSizeIteratorDecorator(dogVector.GetIterator(), SizeEnum::Small);
-    for (smallDogs->First(); !smallDogs->IsDone(); smallDogs->Next())
-    {
-        DogPtr dog = smallDogs->GetCurrent();
-        cout << "Small dog species: " << static_cast<int>(dog->GetSpecies()) << endl;
-    }
-    delete smallDogs;
-
-    return 0;
-}*/
-/*
-    // ПРОВЕРКА РАБОТЫ ИТЕРАТОРОВ
-    // Создаем контейнеры
-    DogVectorContainer dogVector(5);
-    DogListContainer dogList;
-
-    // Добавляем собак
-    DogPtr d1 = new Dachshund(ColorEnum::Brown, SizeEnum::Small);
-    DogPtr d2 = new Husky(ColorEnum::Grey, SizeEnum::Big);
-    DogPtr d3 = new Labrador(ColorEnum::Black, SizeEnum::Giant);
-
-    dogVector.AddDog(d1);
-    dogVector.AddDog(d2);
-    dogVector.AddDog(d3);
-
-    dogList.AddDog(d1);
-    dogList.AddDog(d2);
-    dogList.AddDog(d3);
-
-    // Тест итератора для вектора
-    Iterator<DogPtr> *vectorIterator = dogVector.GetIterator();
-    cout << "=== DogVectorContainer ===\n";
-    for (vectorIterator->First(); !vectorIterator->IsDone(); vectorIterator->Next())
-    {
-        DogPtr current = vectorIterator->GetCurrent();
-        current->Pet();
-        current->Feed();
-        current->Pet();
-    }
-    delete vectorIterator;  // Удаляем итератор
-
-    // Тест итератора для списка
-    Iterator<DogPtr> *listIterator = dogList.GetIterator();
-    cout << "\n=== DogListContainer ===\n";
-    for (listIterator->First(); !listIterator->IsDone(); listIterator->Next())
-    {
-        DogPtr current = listIterator->GetCurrent();
-        current->Pet();
-        current->Feed();
-        current->Pet();
-    }
-    delete listIterator;  // Удаляем итератор
-
-    return 0;
-*/
 
 
