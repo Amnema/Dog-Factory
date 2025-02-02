@@ -34,41 +34,41 @@ void DogVectorContainer::AddDog(DogPtr newDog)
     DogValier[DogCount] = newDog;
     DogCount++;
 }
-wstring PrintDogSpecies (const DogSpecies species)
+string PrintDogSpecies (const DogSpecies species)
 {
     switch(species)
     {
-        case DogSpecies::Alabai: return L"Alabai";
-        case DogSpecies::Dachshund: return L"Dachshund";
-        case DogSpecies::Husky: return L"Husky";
-        case DogSpecies::Labrador: return L"Labrador";
-        case DogSpecies::Spitz: return L"Spitz";
-        default: return L"Unknown";
+        case DogSpecies::Alabai: return "Alabai";
+        case DogSpecies::Dachshund: return "Dachshund";
+        case DogSpecies::Husky: return "Husky";
+        case DogSpecies::Labrador: return "Labrador";
+        case DogSpecies::Spitz: return "Spitz";
+        default: return "Unknown";
     }
 }
 
-wstring PrintDogColor (const ColorEnum color)
+string PrintDogColor (const ColorEnum color)
 {
     switch(color)
     {
-        case ColorEnum::Black: return L"Black";
-        case ColorEnum::Brown: return L"Brown";
-        case ColorEnum::Grey: return L"Grey";
-        case ColorEnum::MultiColor: return L"MultiColor";
-        case ColorEnum::White: return L"White";
-        default: return L"Unknown";
+        case ColorEnum::Black: return "Black";
+        case ColorEnum::Brown: return "Brown";
+        case ColorEnum::Grey: return "Grey";
+        case ColorEnum::MultiColor: return "MultiColor";
+        case ColorEnum::White: return "White";
+        default: return "Unknown";
     }
 }
 
-wstring PrintDogSize (const SizeEnum sizedog)
+string PrintDogSize (const SizeEnum sizedog)
 {
     switch(sizedog)
     {
-        case SizeEnum::Big: return L"Big";
-        case SizeEnum::Giant: return L"Giant";
-        case SizeEnum::Medium: return L"Medium";
-        case SizeEnum::Small: return L"Small";
-        default: return L"Unknown";
+        case SizeEnum::Big: return "Big";
+        case SizeEnum::Giant: return "Giant";
+        case SizeEnum::Medium: return "Medium";
+        case SizeEnum::Small: return "Small";
+        default: return "Unknown";
     }
 }
 //функция для совместного использования итератора и декоратора
@@ -92,10 +92,10 @@ void PrintFilteredDogs(DogVectorContainer &dogContainer, bool goodOnly, ColorEnu
     for (it->First(); !it->IsDone(); it->Next())
     {
         DogPtr dog = it->GetCurrent();
-        wcout << L"Dog species: " << PrintDogSpecies(dog->GetSpecies())
-             << L", Color: " << PrintDogColor(dog->GetColor())
-             << L", Size: " << PrintDogSize(dog->GetSize())
-             << L", Good? " << (dog->IsGood() ? L"Yes" : L"No") << endl;
+        cout << "Dog species: " << PrintDogSpecies(dog->GetSpecies())
+             << ", Color: " << PrintDogColor(dog->GetColor())
+             << ", Size: " << PrintDogSize(dog->GetSize())
+             << ", Good? " << (dog->IsGood() ? "Yes" : "No") << endl;
     }
     delete it;
 }
@@ -103,6 +103,34 @@ void PrintFilteredDogs(DogVectorContainer &dogContainer, bool goodOnly, ColorEnu
 
 int main()
 {
+        SQLiteContainer dogDB("dogs.db");
+
+        // Создаём таблицу
+        dogDB.ExecuteQuery("CREATE TABLE IF NOT EXISTS Dogs (Species TEXT, Color TEXT, Size TEXT);");
+
+        // Добавляем 5 случайных собак в БД с помощью фабричного метода
+        for (int i = 0; i < 5; i++) {
+            DogPtr dog = DogFactory::CreateRandomDog();
+            dogDB.AddDog(PrintDogSpecies(dog->GetSpecies()),
+                         PrintDogColor(dog->GetColor()),
+                         PrintDogSize(dog->GetSize()));
+        }
+
+        // Создаём итератор для просмотра базы данных
+        SQLiteContainerIterator it(dogDB.GetDB(), "SELECT Species, Color, Size FROM Dogs;");
+
+        // Выводим данные из БД
+        for (it.First(); !it.IsDone(); it.Next()) {
+            DogPtr dog = it.GetCurrent();
+            cout << "Dog species: " << PrintDogSpecies(dog->GetSpecies())
+                  << ", Color: " << PrintDogColor(dog->GetColor())
+                  << ", Size: " << PrintDogSize(dog->GetSize()) << endl;
+        }
+    return 0;
+}
+
+
+/*
     //фабричный метод и фильтрация (совместное использование декоратора и итератора)
     srand(time(0)); // Инициализация генератора случайных чисел
 
@@ -135,7 +163,7 @@ int main()
     cout << "\nFilter:Only wight dogs\n";
     PrintFilteredDogs(dogContainer, false, ColorEnum::White);
     return 0;
-}
+}*/
 
 
 

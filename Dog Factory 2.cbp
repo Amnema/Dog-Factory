@@ -32,8 +32,14 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="Patterns.h" />
 		<Unit filename="classes.cpp" />
+		<Unit filename="containers.cpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="sqlite3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sqlite3.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

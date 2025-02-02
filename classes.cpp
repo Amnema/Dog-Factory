@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Patterns.h"
+#include <memory>
 #include <cstdlib> // для rand()
 #include <ctime>   // для srand()
 using namespace std;
@@ -105,6 +106,17 @@ public:
         SizeEnum size = static_cast<SizeEnum>(rand() % 4);
 
         // Создаем случайную собаку
+        return CreateDog(species, color, size);
+    }
+
+    static DogPtr CreateDogFromData(const string &speciesStr, const string &colorStr, const string &sizeStr)
+    {
+        return CreateDog(StringToSpecies(speciesStr), StringToColor(colorStr), StringToSize(sizeStr));
+    }
+
+private:
+    static DogPtr CreateDog(DogSpecies species, ColorEnum color, SizeEnum size)
+    {
         switch (species)
         {
             case DogSpecies::Dachshund: return new Dachshund(color, size);
@@ -115,5 +127,32 @@ public:
             default: return nullptr;
         }
     }
+
+    static DogSpecies StringToSpecies(const string &species)
+    {
+        if (species == "Dachshund") return DogSpecies::Dachshund;
+        if (species == "Spitz") return DogSpecies::Spitz;
+        if (species == "Husky") return DogSpecies::Husky;
+        if (species == "Labrador") return DogSpecies::Labrador;
+        if (species == "Alabai") return DogSpecies::Alabai;
+    }
+
+    static ColorEnum StringToColor(const string &color)
+    {
+        if (color == "White") return ColorEnum::White;
+        if (color == "Black") return ColorEnum::Black;
+        if (color == "Brown") return ColorEnum::Brown;
+        if (color == "Grey") return ColorEnum::Grey;
+        if (color == "MultiColor") return ColorEnum::MultiColor;
+    }
+
+    static SizeEnum StringToSize(const string &size)
+    {
+        if (size == "Small") return SizeEnum::Small;
+        if (size == "Medium") return SizeEnum::Medium;
+        if (size == "Big") return SizeEnum::Big;
+        if (size == "Giant") return SizeEnum::Giant;
+    }
 };
+
 

@@ -1,4 +1,6 @@
 #include "classes.cpp"
+#include "sqlite3.h"
+#include <stdexcept>
 #include <vector>
 #include <list>
 
@@ -179,10 +181,110 @@ private:
 public:
     void AddDog(DogPtr newDog) { dogValier.push_back(newDog); }
     int GetCount() const { return DogValier.size(); }
-    // FruitPtr GetByIndex(int index) const { return FruitBox[index]; }
 
     Iterator<DogPtr> *GetIterator()
     {
         return new DogListContainerIterator(&dogValier);
     }
 };
+
+//итератор для контейнера с дб
+class SQLiteContainerIterator : public Iterator<DogPtr> {
+private:
+    sqlite3_stmt *stmt; // Указатель на подготовленный SQL-запрос
+    sqlite3 *db;        // Указатель на базу данных
+    bool done;          // Флаг завершения итерации
+
+public:
+    SQLiteContainerIterator(sqlite3 *db, const string &query)
+        : db(db), stmt(nullptr), done(false)
+    {
+        // Подготавливаем SQL-запрос
+        if (sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+            throw runtime_error("Failed to prepare SQLite statement");
+        }
+        First(); // Устанавливаем итератор на первую строку
+    }
+
+    ~SQLiteContainerIterator() {
+        if (stmt) {
+            sqlite3_finalize(stmt);
+        }
+    }
+
+    void First() override {
+        sqlite3_reset(stmt); // Сбрасываем запрос
+        done = (sqlite3_step(stmt) != SQLITE_ROW); // Переходим к первой строке
+    }
+
+    void Next() override {
+        done = (sqlite3_step(stmt) != SQLITE_ROW); // Переходим к следующей строке
+    }
+
+    bool IsDone() const override {
+        return done; // Проверяем, достигнут ли конец результата
+    }
+
+    DogPtr GetCurrent() const override {
+        if (done) {
+            throw out_of_range("No more rows to fetch");
+        }
+
+        // Считываем данные из текущей строки
+        string species = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
+        string color = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+        string size = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+
+        // Создаём объект Dog через фабрику
+        DogPtr dog = DogFactory::CreateDogFromData(species, color, size);
+        return dog;
+    }
+};
+
+
+//Контейнер SQLite
+class SQLiteContainer {
+private:
+    sqlite3 *db;
+    string dbPath;
+
+public:
+    // Конструктор
+    SQLiteContainer(const string &path) : dbPath(path) {
+        // Открываем базу данных
+        if (sqlite3_open(dbPath.c_str(), &db) != SQLITE_OK) {
+            throw runtime_error("Failed to open SQLite database");
+        }
+    }
+
+    // Деструктор
+    ~SQLiteContainer() {
+        if (db) {
+            sqlite3_close(db); // Закрываем базу данных
+        }
+    }
+
+    // Метод для выполнения SQL-запросов
+    void ExecuteQuery(const string &query) {
+        char *errMsg = nullptr;
+        if (sqlite3_exec(db, query.c_str(), nullptr, nullptr, &errMsg) != SQLITE_OK) {
+            string error = errMsg;
+            sqlite3_free(errMsg);
+            throw runtime_error("SQLite query failed: " + error);
+        }
+    }
+
+    // Метод для добавления записей
+    void AddDog(const string &species, const string &color, const string &size) {
+        string query = "INSERT INTO Dogs (Species, Color, Size) VALUES ('" + species + "', '" + color + "', '" + size + "');";
+        ExecuteQuery(query);
+    }
+
+    Iterator<DogPtr> *GetIterator()
+    {
+        return new SQLiteContainerIterator(db, "SELECT Species, Color, Size FROM Dogs;");
+    }
+
+    sqlite3 *GetDB() { return db; }
+};
+
