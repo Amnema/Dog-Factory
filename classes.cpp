@@ -1,17 +1,16 @@
 #include <iostream>
 #include "Patterns.h"
-#include <memory>
 #include <cstdlib> // для rand()
 #include <ctime>   // для srand()
 using namespace std;
-enum class SizeEnum:int
+enum class SizeEnum
 {
     Small,
     Medium,
     Big,
     Giant
 };
-enum class ColorEnum:int
+enum class ColorEnum
 {
     Black,
     Brown,
@@ -20,7 +19,7 @@ enum class ColorEnum:int
     MultiColor= -1,
 
 };
-enum class DogSpecies:int
+enum class DogSpecies
 {
     Dachshund,
     Spitz,
@@ -36,12 +35,7 @@ protected:
     ColorEnum Color;
     DogSpecies Species;
 public:
-    Dog()
-    {
-        // 80% шанс, что собака добрая, 20% - злая
-        BoyIsGood = (rand() % 10 < 8);
-    }
-
+    Dog(){ BoyIsGood = (rand() % 10 < 8);}
     bool IsGood() { return BoyIsGood; }
     void SetGood(bool value) { BoyIsGood = value; }
 

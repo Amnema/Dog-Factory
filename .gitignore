@@ -3,3 +3,6 @@ doxygen
 obj
 Dog Factory 2.depend
 Dog Factory 2.layout
+sqlite3.c
+sqlite3.h
+dogs.db
