@@ -103,6 +103,8 @@ void PrintFilteredDogs(DogVectorContainer &dogContainer, bool goodOnly, ColorEnu
 
 int main()
 {
+        srand(static_cast<unsigned int>(time(0)));
+
         SQLiteContainer dogDB("dogs.db");
 
         // Создаём таблицу

@@ -16,7 +16,7 @@ enum class ColorEnum
     Brown,
     Grey,
     White,
-    MultiColor= -1,
+    MultiColor
 
 };
 enum class DogSpecies
@@ -96,7 +96,7 @@ public:
     {
         // Генерируем случайные параметры
         DogSpecies species = static_cast<DogSpecies>(rand() % 5);
-        ColorEnum color = static_cast<ColorEnum>(rand() % 4);
+        ColorEnum color = static_cast<ColorEnum>(rand() % 5);
         SizeEnum size = static_cast<SizeEnum>(rand() % 4);
 
         // Создаем случайную собаку
